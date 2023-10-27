@@ -22,6 +22,7 @@ actions:
     components:
       - main
       - non-free
+      - non-free-firmware
     mirror: {{ $mirror }}
     variant: minbase
 
@@ -42,6 +43,7 @@ actions:
       - u-boot-rpi
       - vim-tiny
       - systemd-timesyncd
+      - zstd
 
   - action: overlay
     description: Install U-Boot menu configuration
