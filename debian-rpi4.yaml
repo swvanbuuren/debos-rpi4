@@ -160,6 +160,10 @@ actions:
     append-kernel-cmdline: {{ $cmdline }}
 
   - action: run
+    chroot: true
+    script: scripts/setup_swap.sh
+
+  - action: run
     description: Create block map file
     postprocess: true
     command: bmaptool create {{ $image }} > {{ $image }}.bmap
