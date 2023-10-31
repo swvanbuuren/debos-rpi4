@@ -115,7 +115,7 @@ actions:
   - action: run
     description: Set up user
     chroot: true
-    script: scripts/setup-user.sh
+    script: scripts/setup_user.sh
 
   - action: run
     description: Add hostname
@@ -131,7 +131,7 @@ actions:
 
   - action: run
     chroot: true
-    script: scripts/setup-networking.sh
+    script: scripts/setup_networking.sh
 
   - action: image-partition
     imagename: {{ $image }}
