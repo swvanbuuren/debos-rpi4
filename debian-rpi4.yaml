@@ -4,6 +4,7 @@
 {{- $kernel := or .kernel "linux-image-arm64" -}}
 {{- $cmdline := or .cmdline " rootwait ro fsck.mode=auto fsck.repair=yes console=ttyS1,115200" -}}
 {{- $image := or .image "debian-rpi4.img" -}}
+{{- $username := or .username "sietze" -}}
 
 architecture: arm64
 
@@ -113,9 +114,14 @@ actions:
     command: sh -c "rm -rf ${ROOTDIR}/boot/firmware/kernel* ${ROOTDIR}/boot/firmware/vmlinuz* ${ROOTDIR}/boot/firmware/initrd.img*"
 
   - action: run
-    description: Set up user
+    description: Set up user {{ $username }}
     chroot: true
-    script: scripts/setup_user.sh
+    command: adduser --gecos {{ $username }} --disabled-password --shell /bin/bash {{ $username }}; echo "{{ $username }}:{{ $username }}" | chpasswd
+
+  - action: run
+    description: Add user {{ $username }} to sudoers
+    chroot: true
+    command: /usr/sbin/usermod -a -G sudo {{ $username }}; mkdir -p /etc/sudoers.d; echo "{{ $username }}	ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/{{ $username }}
 
   - action: run
     description: Add hostname
@@ -136,6 +142,11 @@ actions:
   - action: run
     chroot: true
     script: scripts/setup_swap.sh
+
+  - action: run
+    description: Force user to change its password on first login
+    chroot: true
+    command: passwd --expire {{ $username }}
 
   - action: image-partition
     imagename: {{ $image }}
