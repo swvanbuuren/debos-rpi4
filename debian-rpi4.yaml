@@ -144,7 +144,7 @@ actions:
     script: scripts/setup_swap.sh
 
   - action: run
-    description: Force user to change its password on first login
+    description: Force user {{ $username }} to change its password on first login
     chroot: true
     command: passwd --expire {{ $username }}
 
