@@ -133,6 +133,10 @@ actions:
     chroot: true
     script: scripts/setup_networking.sh
 
+  - action: run
+    chroot: true
+    script: scripts/setup_swap.sh
+
   - action: image-partition
     imagename: {{ $image }}
     imagesize: 4GB
@@ -158,10 +162,6 @@ actions:
     description: Deploying filesystem onto image
     setup-kernel-cmdline: true
     append-kernel-cmdline: {{ $cmdline }}
-
-  - action: run
-    chroot: true
-    script: scripts/setup_swap.sh
 
   - action: run
     description: Create block map file
