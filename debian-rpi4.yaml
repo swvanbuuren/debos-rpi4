@@ -4,7 +4,7 @@
 {{- $kernel := or .kernel "linux-image-arm64" -}}
 {{- $cmdline := or .cmdline " rootwait ro fsck.mode=auto fsck.repair=yes console=ttyS1,115200" -}}
 {{- $image := or .image "debian-rpi4.img" -}}
-{{- $username := or .username "sietze" -}}
+{{- $username := or .username "user" -}}
 
 architecture: arm64
 
