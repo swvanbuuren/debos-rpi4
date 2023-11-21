@@ -1,6 +1,7 @@
 #!/bin/sh
 # https://discourse.pi-hole.net/t/what-is-setupvars-conf-and-how-do-i-use-it/3533/9
 # https://github.com/r-pufky/ansible_pihole/tree/main/templates
+
 # create settings file
 mkdir -p /etc/pihole
 cat > /etc/pihole/setupVars.conf << EOL
@@ -31,9 +32,11 @@ DNS_BOGUS_PRIV=true
 DNSMASQ_LISTENING=local
 TEMPERATUREUNIT=C
 EOL
+
 # install pihole
 curl -L https://install.pi-hole.net | bash /dev/stdin --unattended
-# create adlists file
+
+# setup custom adlists
 cat > /tmp/pihole_adlists.txt << EOL
 https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
 https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
@@ -68,5 +71,6 @@ https://www.github.developerdan.com/hosts/lists/ads-and-tracking-extended.txt
 https://www.github.developerdan.com/hosts/lists/amp-hosts-extended.txt
 EOL
 cat /tmp/pihole_adlists.txt | xargs -n1 -I{} sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, comment) VALUES ('{}', 1, 'comment');"
+
 # update gravity
 pihole -g
