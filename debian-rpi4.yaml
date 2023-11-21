@@ -1,12 +1,12 @@
 {{- $firmware_version := or .firmware_version "1.20230405" -}}
 {{- $mirror := or .mirror "http://deb.debian.org/debian" -}}
 {{- $suite := or .suite "bookworm" -}}
-{{- $kernel := or .kernel "linux-image-arm64" -}}
+{{- $architecture := or .architecture "arm64" -}}
 {{- $cmdline := or .cmdline " rootwait ro fsck.mode=auto fsck.repair=yes console=ttyS1,115200" -}}
 {{- $image := or .image "debian-rpi4.img" -}}
 {{- $username := or .username "user" -}}
 
-architecture: arm64
+architecture: {{ $architecture }}
 
 actions:
   {{ if ne $firmware_version "debian" }}
@@ -53,7 +53,7 @@ actions:
   - action: apt
     description: Install kernel and firmware packages for RPi
     packages:
-      - {{ $kernel}}
+      - linux-image-{{ $architecture}}
       - firmware-brcm80211
       - rpi.gpio-common
 
