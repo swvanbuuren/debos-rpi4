@@ -34,6 +34,7 @@ actions:
       - bluetooth
       - ca-certificates
       - dbus-user-session
+      - findutils
       - iproute2
       - i2c-tools
       - libnss-resolve
@@ -147,6 +148,11 @@ actions:
     description: Force user {{ $username }} to change its password on first login
     chroot: true
     command: passwd --expire {{ $username }}
+
+  - action: run
+    description: Install and configure pihole
+    chroot: true
+    script: scripts/setup_pihole.sh
 
   - action: image-partition
     imagename: {{ $image }}
