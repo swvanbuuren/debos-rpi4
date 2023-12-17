@@ -3,8 +3,9 @@
 {{- $suite := or .suite "bookworm" -}}
 {{- $architecture := or .architecture "arm64" -}}
 {{- $cmdline := or .cmdline " rootwait ro fsck.mode=auto fsck.repair=yes console=ttyS1,115200" -}}
-{{- $image := or .image "debian-rpi4.img" -}}
+{{- $image := or .image "debian-rpi4" -}}
 {{- $username := or .username "user" -}}
+{{- $hostname := or .username "raspberrypi" -}}
 
 architecture: {{ $architecture }}
 
@@ -33,6 +34,7 @@ actions:
       - adduser
       - bluetooth
       - ca-certificates
+      - curl
       - dbus-user-session
       - findutils
       - iproute2
@@ -127,7 +129,7 @@ actions:
   - action: run
     description: Add hostname
     chroot: true
-    command: echo rpi64 > /etc/hostname
+    command: echo {{ $hostname }} > /etc/hostname
 
   - action: overlay
     description: Autoload modules
@@ -149,13 +151,8 @@ actions:
     chroot: true
     command: passwd --expire {{ $username }}
 
-  - action: run
-    description: Install and configure pihole
-    chroot: true
-    script: scripts/setup_pihole.sh
-
   - action: image-partition
-    imagename: {{ $image }}
+    imagename: {{ $image }}.img
     imagesize: 15.9GB
     partitiontype: msdos
     mountpoints:
@@ -181,11 +178,16 @@ actions:
     append-kernel-cmdline: {{ $cmdline }}
 
   - action: run
+    description: Convert image to qow2 format
+    postprocess: true
+    command: qemu-img convert -f raw -O qcow2 {{ $image }}.img {{ $image }}.qcow2
+
+  - action: run
     description: Create block map file
     postprocess: true
-    command: bmaptool create {{ $image }} > {{ $image }}.bmap
+    command: bmaptool create {{ $image }}.img > {{ $image }}.img.bmap
 
   - action: run
     description: Compressing final image
     postprocess: true
-    command: gzip -f {{ $image }}
+    command: gzip -f {{ $image }}.img

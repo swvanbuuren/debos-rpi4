@@ -1,3 +1,6 @@
 *.img*
+*.qcow2*
+vmlinuz*
+initrd*
 debos_run
 image_run
