@@ -32,25 +32,22 @@ To test the image in Qemu environment, it is recommended to use the following ba
 
 ```bash
 #!/bin/bash
-KERNEL_VERSION="<kernel-version>"
-INITRD_FILE="initrd.img-${KERNEL_VERSION}-arm64"
-VMLINUZ_FILE="vmlinuz-${KERNEL_VERSION}-arm64"
-
-if [ ! -f "$INITRD_FILE" ]; then
-    virt-copy-out -a $1 "/boot/$INITRD_FILE" .
-fi
-
-if [ ! -f "$VMLINUZ_FILE" ]; then
-    virt-copy-out -a $1 "/boot/$VMLINUZ_FILE" .
-fi
-
+# Find boot artifacts
+for basename in "vmlinuz" "initrd.img"; do
+    if [ -f "$basename" ]; then continue; fi
+    fpath=$(virt-ls -a "$1" /boot | grep -E "^$basename-[[:digit:]]" | sort -r | head -n 1)
+    echo "Found $fpath!"
+    virt-copy-out -a $1 "/boot/$fpath" .
+    mv $fpath $basename
+done
+# Launch Qemu
 qemu-system-aarch64 \
     -m 2048 \
     -cpu cortex-a57 \
     -smp 2 \
     -M virt \
-    -kernel $VMLINUZ_FILE \
-    -initrd $INITRD_FILE \
+    -kernel vmlinuz \
+    -initrd initrd.img \
     -append 'root=/dev/vda2' \
     -drive if=none,file=$1,format=qcow2,id=hd \
     -device virtio-blk-pci,drive=hd \
@@ -65,6 +62,10 @@ command
 ```bash
 ./image_run debian-rpi4.qcow2
 ```
+
+Please refer to [this
+website](https://translatedcode.wordpress.com/2017/07/24/installing-debian-on-qemus-64-bit-arm-virt-board/)
+for more background information.
 
 ## Notice
 
