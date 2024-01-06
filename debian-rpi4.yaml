@@ -13,7 +13,7 @@ architecture: {{ $architecture }}
 actions:
 
   - action: recipe
-    description: Include base recipe
+    description: Base recipe
     recipe: base.yaml
     variables:
       architecture: {{ $architecture}}
