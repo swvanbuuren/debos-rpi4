@@ -1,0 +1,150 @@
+{{- $architecture := or .architecture "arm64" -}}
+{{- $firmware_version := or .firmware_version "1.20230405" -}}
+{{- $mirror := or .mirror "http://deb.debian.org/debian" -}}
+{{- $suite := or .suite "bookworm" -}}
+{{- $username := or .username "user" -}}
+{{- $hostname := or .username "raspberrypi" -}}
+
+architecture: {{ $architecture }}
+
+actions:
+  {{ if ne $firmware_version "debian" }}
+  # Download all needed proprietary stuff first
+  - action: download
+    description: Download latest version of the firmware from GitHub
+    url: http://github.com/raspberrypi/firmware/archive/refs/tags/{{ $firmware_version }}.tar.gz
+    unpack: true     # Unpack downloaded file
+    name: firmware # name for usage directory with unpacked content in other actions
+  {{ end }}
+
+  - action: debootstrap
+    suite: {{ $suite }}
+    components:
+      - main
+      - non-free
+      - non-free-firmware
+    mirror: {{ $mirror }}
+    variant: minbase
+
+  - action: apt
+    description: Install extra packages
+    packages:
+      - adduser
+      - bluetooth
+      - ca-certificates
+      - curl
+      - dbus-user-session
+      - findutils
+      - iproute2
+      - i2c-tools
+      - libnss-resolve
+      - openssh-server
+      - sudo
+      - systemd-sysv
+      - u-boot-menu
+      - u-boot-rpi
+      - vim-tiny
+      - systemd-timesyncd
+      - zstd
+
+  - action: overlay
+    description: Install U-Boot menu configuration
+    source: overlays/u-boot-menu
+
+  - action: apt
+    description: Install kernel and firmware packages for RPi
+    packages:
+      - linux-image-{{ $architecture}}
+      - firmware-brcm80211
+      - rpi.gpio-common
+
+  - action: overlay
+    description: Copy config.txt
+    source: overlays/fw-config
+    destination: /boot/firmware
+
+  - action: run
+    description: Install U-Boot
+    chroot: false
+    command: sh -c "cp -av ${ROOTDIR}/usr/lib/u-boot/rpi_arm64/u-boot.bin ${ROOTDIR}/boot/firmware/"
+
+  - action: run
+    description: Copy DTBs for the kernel
+    chroot: false
+    command: sh -c "mkdir -p ${ROOTDIR}/boot/dtbs; cp -rav ${ROOTDIR}/usr/lib/linux-image-*-arm64/broadcom ${ROOTDIR}/boot/dtbs/"
+
+  {{ if ne $firmware_version "debian" }}
+  - action: overlay
+    description: Install RPi boot firmware ({{ $firmware_version }})
+    origin: firmware
+    source: firmware-{{ $firmware_version }}/boot
+    destination: /boot/firmware
+
+  {{ else }}
+  - action: apt
+    description: Install RPi firmware package
+    packages:
+      - raspi-firmware
+
+  - action: run
+    description: Install RPi boot firmware (Debian)
+    chroot: false
+    command: sh -c "cp -av ${ROOTDIR}/usr/lib/raspi-firmware/* ${ROOTDIR}/boot/firmware/"
+
+  - action: run
+    description: Copy DTBs from the kernel
+    chroot: false
+    command:  sh -c "cp -av ${ROOTDIR}/usr/lib/linux-image-*-arm64/broadcom/* ${ROOTDIR}/boot/firmware/"
+
+  - action: run
+    description: Use upstream DTBs naming
+    chroot: false
+    command:  sh -c "echo upstream_kernel=1 >> ${ROOTDIR}/boot/firmware/config.txt"
+
+  # Do not need to keep firmware package after firmware partition setup.
+  # raspi-firmware contains kernel postinstall script incompatible with U-Boot
+  - action: run
+    description: Remove RPi firmware package
+    chroot: true
+    command: dpkg -P raspi-firmware
+  {{ end }}
+
+  - action: run
+    description: Cleanup firmware partition
+    chroot: false
+    command: sh -c "rm -rf ${ROOTDIR}/boot/firmware/kernel* ${ROOTDIR}/boot/firmware/vmlinuz* ${ROOTDIR}/boot/firmware/initrd.img*"
+
+  - action: run
+    description: Set up user {{ $username }}
+    chroot: true
+    command: adduser --gecos {{ $username }} --disabled-password --shell /bin/bash {{ $username }}; echo "{{ $username }}:{{ $username }}" | chpasswd
+
+  - action: run
+    description: Add user {{ $username }} to sudoers
+    chroot: true
+    command: /usr/sbin/usermod -a -G sudo {{ $username }}; mkdir -p /etc/sudoers.d; echo "{{ $username }}	ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/{{ $username }}
+
+  - action: run
+    description: Add hostname
+    chroot: true
+    command: echo {{ $hostname }} > /etc/hostname
+
+  - action: overlay
+    description: Autoload modules
+    source: overlays/modules
+
+  - action: overlay
+    source: overlays/networkd
+
+  - action: run
+    chroot: true
+    script: scripts/setup_networking.sh
+
+  - action: run
+    chroot: true
+    script: scripts/setup_swap.sh
+
+  - action: run
+    description: Force user {{ $username }} to change its password on first login
+    chroot: true
+    command: passwd --expire {{ $username }}

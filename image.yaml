@@ -1,0 +1,48 @@
+{{- $architecture := or .architecture "arm64" -}}
+{{- $cmdline := or .cmdline " rootwait ro fsck.mode=auto fsck.repair=yes console=ttyS1,115200" -}}
+{{- $image := or .image "debian-rpi4" -}}
+{{- $imagesize := or .imagesize "15.9GB" -}}
+
+architecture: {{ $architecture }}
+
+actions:
+  - action: image-partition
+    imagename: {{ $image }}.img
+    imagesize: {{ $imagesize }}
+    partitiontype: msdos
+    mountpoints:
+      - mountpoint: /
+        partition: root
+      - mountpoint: /boot/firmware
+        partition: firmware
+        options: [ x-systemd.automount ]
+    partitions:
+      - name: firmware
+        fs: fat32
+        start: 0%
+        end: 64MB
+      - name: root
+        fs: ext4
+        start: 64MB
+        end: 100%
+        flags: [ boot ]
+
+  - action: filesystem-deploy
+    description: Deploying filesystem onto image
+    setup-kernel-cmdline: true
+    append-kernel-cmdline: {{ $cmdline }}
+
+  - action: run
+    description: Convert image to qow2 format
+    postprocess: true
+    command: qemu-img convert -f raw -O qcow2 {{ $image }}.img {{ $image }}.qcow2
+
+  - action: run
+    description: Create block map file
+    postprocess: true
+    command: bmaptool create {{ $image }}.img > {{ $image }}.img.bmap
+
+  - action: run
+    description: Compressing final image
+    postprocess: true
+    command: gzip -f {{ $image }}.img
