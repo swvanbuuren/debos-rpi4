@@ -6,6 +6,7 @@
 {{- $image := or .image "debian-rpi4" -}}
 {{- $username := or .username "user" -}}
 {{- $hostname := or .username "raspberrypi" -}}
+{{- $imagesize := or .imagesize "15.9GB" -}}
 
 architecture: {{ $architecture }}
 
@@ -153,7 +154,7 @@ actions:
 
   - action: image-partition
     imagename: {{ $image }}.img
-    imagesize: 15.9GB
+    imagesize: {{ $imagesize }}
     partitiontype: msdos
     mountpoints:
       - mountpoint: /
