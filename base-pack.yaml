@@ -34,9 +34,7 @@ actions:
       - adduser
       - bluetooth
       - ca-certificates
-      - curl
       - dbus-user-session
-      - findutils
       - iproute2
       - i2c-tools
       - libnss-resolve
