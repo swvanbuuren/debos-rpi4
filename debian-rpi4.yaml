@@ -3,7 +3,9 @@
 {{- $suite := or .suite "bookworm" -}}
 {{- $architecture := or .architecture "arm64" -}}
 {{- $cmdline := or .cmdline " rootwait ro fsck.mode=auto fsck.repair=yes console=ttyS1,115200" -}}
+{{- $unpack := or .unpack "true" }}
 {{- $image := or .image "debian-rpi4" -}}
+{{- $basepack := or .basepack (printf "base-pack-%s" $image) -}}
 {{- $username := or .username "user" -}}
 {{- $hostname := or .username "raspberrypi" -}}
 {{- $imagesize := or .imagesize "15.9GB" -}}
@@ -12,9 +14,15 @@ architecture: {{ $architecture }}
 
 actions:
 
+{{- if eq $unpack "true" }}
+  - action: unpack
+    description: Unpack {{ $basepack }}
+    compression: gz
+    file: {{ $basepack }}.tar.gz
+{{- else }}
   - action: recipe
     description: Base recipe
-    recipe: base.yaml
+    recipe: base-pack.yaml
     variables:
       architecture: {{ $architecture}}
       firmware_version: {{ $firmware_version }}
@@ -22,10 +30,12 @@ actions:
       suite: {{ $suite }}
       username: {{ $username }}
       hostname: {{ $hostname }}
+      basepack: {{ $basepack }}
+{{- end }}
 
   - action: recipe
     description: Recipe for creating image
-    recipe: image.yaml
+    recipe: finish-image.yaml
     variables:
       architecture: {{ $architecture }}
       cmdline: {{ $cmdline }}

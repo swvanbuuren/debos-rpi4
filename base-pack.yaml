@@ -4,6 +4,8 @@
 {{- $suite := or .suite "bookworm" -}}
 {{- $username := or .username "user" -}}
 {{- $hostname := or .username "raspberrypi" -}}
+{{- $pack := or .pack "true" }}
+{{- $basepack := or .basepack "base-pack-debian-rpi4" -}}
 
 architecture: {{ $architecture }}
 
@@ -148,3 +150,10 @@ actions:
     description: Force user {{ $username }} to change its password on first login
     chroot: true
     command: passwd --expire {{ $username }}
+
+{{- if eq $pack "true" }}
+  - action: pack
+    description: Compress base pack into {{ $basepack }}
+    compression: gz
+    file: {{ $basepack }}.tar.gz
+{{- end }}

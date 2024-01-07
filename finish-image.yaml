@@ -6,6 +6,7 @@
 architecture: {{ $architecture }}
 
 actions:
+
   - action: image-partition
     imagename: {{ $image }}.img
     imagesize: {{ $imagesize }}
