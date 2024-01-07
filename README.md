@@ -49,7 +49,7 @@ apt install libguestfs-tools qemu-system-arm qemu-utils
 
 ### Instructions
 
-To test the image in Qemu environment, it is recommended to use the following bash script `image_run`, where `<kernel-version>` is to be replaced with the actual used kernel version (e.g. `6.1.0-15`):
+To test the image in Qemu environment, it is recommended to use the following bash script `image_run`:
 
 ```bash
 #!/bin/bash
