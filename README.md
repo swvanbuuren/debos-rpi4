@@ -6,7 +6,28 @@ B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/).
 
 ## How to build
 
-Run the following command to build the image from the Debos recipe:
+Follow these instructions to build the image.
+
+## First build
+
+In order to save build time, the `base-pack.yaml` recipe is prebuilt and stored
+in a compressed archive. By default, the standard build is configured to extract and use build results from this archive. This is controlled using the variable `unpack`.
+
+To build the image the first time, using the recipe `base-pack.yaml` instead of
+the prebuilt archive, run the following command:
+
+```bash
+debos -m 8192MB -b kvm -t unpack:false debian-rpi4.yaml
+```
+
+This will also store the results from the recipe `base-pack.yaml` and replace
+any previously generated archive. If the `base-pack.yaml` recipe has been
+changed, you also want build the image using this command.
+
+## Normal build
+
+If you already have generated the `base-pack` archive and the `base-pack.yaml`
+recipe hasn't been changed, you can build the image using:
 
 ```bash
 debos -m 8192MB -b kvm debian-rpi4.yaml
