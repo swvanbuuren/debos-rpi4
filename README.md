@@ -44,7 +44,7 @@ The instruction are valid for a recent Debian system (it was tested on Bullseye)
 A series of package is required to be installed, using the following command:
 
 ```bash
-apt install libguestfs-tools libguestfs-tools qemu-system-arm qemu-utils
+apt install libguestfs-tools qemu-system-arm qemu-utils
 ```
 
 ### Instructions
