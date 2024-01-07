@@ -29,7 +29,7 @@ actions:
         flags: [ boot ]
 
   - action: filesystem-deploy
-    description: Deploying filesystem onto image
+    description: Deploy filesystem onto image
     setup-kernel-cmdline: true
     append-kernel-cmdline: {{ $cmdline }}
 
@@ -44,6 +44,6 @@ actions:
     command: bmaptool create {{ $image }}.img > {{ $image }}.img.bmap
 
   - action: run
-    description: Compressing final image
+    description: Compress final image
     postprocess: true
     command: gzip -f {{ $image }}.img
