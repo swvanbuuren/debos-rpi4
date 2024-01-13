@@ -9,6 +9,7 @@
 {{- $username := or .username "user" -}}
 {{- $hostname := or .username "raspberrypi" -}}
 {{- $imagesize := or .imagesize "15.9GB" -}}
+{{- $qemu_cow := or .qemu_cow "false" -}}
 
 architecture: {{ $architecture }}
 
@@ -34,10 +35,18 @@ actions:
 {{- end }}
 
   - action: recipe
-    description: Recipe for creating image
-    recipe: finish-image.yaml
+    description: Partition and deploy file system onto image
+    recipe: partition-deploy.yaml
     variables:
       architecture: {{ $architecture }}
       cmdline: {{ $cmdline }}
       image: {{ $image }}
       imagesize: {{ $imagesize }}
+
+  - action: recipe
+    description: Finish the image file(s)
+    recipe: finish-image.yaml
+    variables:
+      architecture: {{ $architecture }}
+      image: {{ $image }}
+      qemu_cow: {{ $qemu_cow }}
