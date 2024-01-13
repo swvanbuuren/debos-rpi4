@@ -84,6 +84,8 @@ command
 ./image_run debian-rpi4.qcow2
 ```
 
+You can terminate the Qemu environment by pressing `Ctrl` + `a` followed by `x`.
+
 Please refer to [this
 website](https://translatedcode.wordpress.com/2017/07/24/installing-debian-on-qemus-64-bit-arm-virt-board/)
 for more background information.
