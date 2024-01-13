@@ -92,6 +92,15 @@ Please refer to [this
 website](https://translatedcode.wordpress.com/2017/07/24/installing-debian-on-qemus-64-bit-arm-virt-board/)
 for more background information.
 
+## Flash to SD-Card
+
+By default, the recipe outputs a compressed image along with a `*.bmap` file. Using the `bmaptool` the image can be flashed efficiently to an sd-card. This is accomplished using the following command:
+
+```bash
+sudo bmaptool copy debian-rpi4.img.gz <device>
+```
+where `<device>` is to be replaced with the device path the represents the sd-card, e.g. `/dev/sdc`.
+
 ## Notice
 
 This debos recipe is based on the [rpi64
