@@ -44,7 +44,7 @@ The instruction are valid for a recent Debian system (it was tested on Bullseye)
 A series of package is required to be installed, using the following command:
 
 ```bash
-apt install libguestfs-tools qemu-system-arm qemu-utils
+sudo apt install libguestfs-tools qemu-system-arm qemu-utils
 ```
 
 ### Instructions
@@ -94,7 +94,14 @@ for more background information.
 
 ## Flash to SD-Card
 
-By default, the recipe outputs a compressed image along with a `*.bmap` file. Using the `bmaptool` the image can be flashed efficiently to an sd-card. This is accomplished using the following command:
+By default, the recipe outputs a compressed image along with a `*.bmap` file.
+Using the command `bmaptool` the image can be flashed efficiently to an sd-card.
+This command is provided by the package `bmap-tools`, which is installed using 
+
+```bash
+sudo apt install bmap-tools 
+```
+Finally, the image can be flashed to the sd-card, using the following command:
 
 ```bash
 sudo bmaptool copy debian-rpi4.img.gz <device>
