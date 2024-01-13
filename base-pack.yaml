@@ -140,11 +140,6 @@ actions:
     chroot: true
     script: scripts/setup_networking.sh
 
-  - action: run
-    description: Force user {{ $username }} to change its password on first login
-    chroot: true
-    command: passwd --expire {{ $username }}
-
 {{- if eq $pack "true" }}
   - action: pack
     description: Compress base pack into {{ $basepack }}
