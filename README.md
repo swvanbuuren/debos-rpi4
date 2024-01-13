@@ -49,7 +49,8 @@ apt install libguestfs-tools qemu-system-arm qemu-utils
 
 ### Instructions
 
-To test the image in Qemu environment, it is recommended to use the following bash script `image_run`:
+To test the image in a Qemu environment, it is recommended to use the following
+bash script `image_run`:
 
 ```bash
 #!/bin/bash
@@ -84,7 +85,8 @@ command
 ./image_run debian-rpi4.qcow2
 ```
 
-You can terminate the Qemu environment by pressing `Ctrl` + `a` followed by `x`.
+You can terminate the Qemu environment by pressing <kbd>Ctrl</kbd> +
+<kbd>a</kbd> followed by <kbd>x</kbd>.
 
 Please refer to [this
 website](https://translatedcode.wordpress.com/2017/07/24/installing-debian-on-qemus-64-bit-arm-virt-board/)
