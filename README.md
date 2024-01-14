@@ -132,7 +132,10 @@ console e.g. using `screen` with:
 screen /dev/serial/by-id/<id> 115200
 ```
 
-where `<id>` is to replaced with the correct id of the FTDI cable, which can be identified using the command `ls -l /dev/serial/by-id`.
+where `<id>` is to replaced with the correct id of the FTDI cable, which can be
+identified using the command `ls -l /dev/serial/by-id`. Note that you can detach
+from the screen session by pressing <kbd>Ctrl</kbd>+<kbd>a</kbd> followed by
+<kbd>d</kbd>.
 
 Finally, connect the Raspberry Pi's power source and enjoy!
 
