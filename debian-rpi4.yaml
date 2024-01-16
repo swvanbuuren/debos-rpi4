@@ -7,7 +7,7 @@
 {{- $image := or .image "debian-rpi4" -}}
 {{- $basepack := or .basepack (printf "base-pack-%s" $image) -}}
 {{- $username := or .username "user" -}}
-{{- $hostname := or .username "raspberrypi" -}}
+{{- $hostname := or .hostname "raspberrypi" -}}
 {{- $imagesize := or .imagesize "15.9GB" -}}
 {{- $qemu_cow := or .qemu_cow "false" -}}
 
