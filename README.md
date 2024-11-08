@@ -13,11 +13,17 @@ Follow these instructions to build the image.
 In order to save build time, the `base-pack.yaml` recipe is prebuilt and stored
 in a compressed archive. By default, the standard build is configured to extract and use build results from this archive. This is controlled using the variable `unpack`.
 
+You also might want to overrid the `firmware-version` variable, since it's
+likely that a new firmware was released since the last time this repository was
+updated.
+
 To build the image the first time, using the recipe `base-pack.yaml` instead of
-the prebuilt archive, run the following command:
+the prebuilt archive, and to fetch the latest firmware version, run the
+following command:
 
 ```bash
-debos -m 8192MB -b kvm -t unpack:false debian-rpi4.yaml
+FIRMWARE_VERSION=$(curl -s https://api.github.com/repos/raspberrypi/firmware/tags | grep name | head -n 1 | cut -d '"' -f 4)
+debos -m 8192MB -b kvm -t unpack:false -t firmware_version:$FIRMWARE_VERSION debian-rpi4.yaml
 ```
 
 This will also store the results from the recipe `base-pack.yaml` and replace
