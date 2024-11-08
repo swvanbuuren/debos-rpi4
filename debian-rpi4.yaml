@@ -1,4 +1,4 @@
-{{- $firmware_version := or .firmware_version "1.20230405" -}}
+{{- $firmware_version := or .firmware_version "1.20241008" -}}
 {{- $mirror := or .mirror "http://deb.debian.org/debian" -}}
 {{- $suite := or .suite "bookworm" -}}
 {{- $architecture := or .architecture "arm64" -}}
