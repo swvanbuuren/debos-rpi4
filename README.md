@@ -13,7 +13,7 @@ Follow these instructions to build the image.
 In order to save build time, the `base-pack.yaml` recipe is prebuilt and stored
 in a compressed archive. By default, the standard build is configured to extract and use build results from this archive. This is controlled using the variable `unpack`.
 
-You also might want to overrid the `firmware-version` variable, since it's
+You also might want to override the `firmware-version` variable, since it's
 likely that a new firmware was released since the last time this repository was
 updated.
 
