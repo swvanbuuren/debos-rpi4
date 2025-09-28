@@ -42,15 +42,21 @@ debos -m 8192MB -b kvm debian-rpi4.yaml
 ## Test with Qemu
 
 The following instructions show, how to test the image in a Qemu environment.
+They are valid for a recent Debian system, it was tested on Bullseye, Bookworm
+and Trixie.
 
 ### Prerequisite
-
-The instruction are valid for a recent Debian system (it was tested on Bullseye).
 
 A series of package is required to be installed, using the following command:
 
 ```bash
 sudo apt install libguestfs-tools qemu-system-arm qemu-utils
+```
+
+You also need to create the image in `*.qcow2` format using:
+
+```bash
+debos -m 8192MB -b kvm -t qemu_cow:true debian-rpi4.yaml
 ```
 
 ### Instructions
@@ -83,6 +89,9 @@ qemu-system-aarch64 \
     -netdev user,id=net0,hostfwd=tcp::2222-:22 \
     -nographic
 ```
+
+This will automatically extract the kernel and initramdisk from the generated
+`qcow2` image. These boot artifacts are required to launch Qemu.
 
 Make the script executable (`chmod +x image_run`) and use it with the following
 command
