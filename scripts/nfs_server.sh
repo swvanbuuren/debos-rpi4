@@ -7,6 +7,7 @@ SERVER_NAME=""
 ALLOW_HOSTS="192.168.0."
 declare -A CLIENTS # associative array (hash table)
 declare -A WINDOWS_CLIENTS # associative array (hash table)
+declare -A ANDROID_CLIENTS # associative array (hash table)
 declare -a MOUNT_POINTS # array
 
 check_named() {
@@ -33,6 +34,8 @@ parse_arguments() {
                 check_named "$2" && CLIENTS["${2%%=*}"]="${2#*=}"; shift 2 ;;
             --windows-client)
                 check_named "$2" && WINDOWS_CLIENTS["${2%%=*}"]="${2#*=}"; shift 2 ;;
+            --android-client)
+                check_named "$2" && ANDROID_CLIENTS["${2%%=*}"]="${2#*=}"; shift 2 ;;
             --mount_point)
                 check_unnamed "$2" && MOUNT_POINTS+=("$2     "); shift 2 ;;
             --router_ip)
@@ -62,6 +65,8 @@ if [ $DEBUG = true ]; then
     for key in "${!CLIENTS[@]}"; do echo "  $key: ${CLIENTS[$key]}"; done
     echo "WINDOWS_CLIENTS:"
     for key in "${!WINDOWS_CLIENTS[@]}"; do echo "  $key: ${WINDOWS_CLIENTS[$key]}"; done
+    echo "ANDROID_CLIENTS:"
+    for key in "${!ANDROID_CLIENTS[@]}"; do echo "  $key: ${ANDROID_CLIENTS[$key]}"; done
     echo "MOUNT_POINTS:";
     for value in "${MOUNT_POINTS[@]}"; do echo "  $value"; done
     exit 1
@@ -81,6 +86,12 @@ for name in "${!WINDOWS_CLIENTS[@]}"; do
     ip="${WINDOWS_CLIENTS[$name]}"
     echo "$ip     $name" >> /etc/hosts
     export_string="$export_string $name(rw,async,no_subtree_check,anonuid=0,anongid=0)"
+done
+
+for name in "${!ANDROID_CLIENTS[@]}"; do
+    ip="${ANDROID_CLIENTS[$name]}"
+    echo "$ip     $name" >> /etc/hosts
+    export_string="$export_string $name(ro,sync,no_subtree_check,no_root_squash,insecure)"
 done
 
 echo "Appending /etc/exports"
