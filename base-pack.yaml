@@ -1,7 +1,7 @@
 {{- $architecture := or .architecture "arm64" -}}
-{{- $firmware_version := or .firmware_version "1.20250127" -}}
+{{- $firmware_version := or .firmware_version "1.20250915" -}}
 {{- $mirror := or .mirror "http://deb.debian.org/debian" -}}
-{{- $suite := or .suite "bookworm" -}}
+{{- $suite := or .suite "trixie" -}}
 {{- $username := or .username "user" -}}
 {{- $hostname := or .hostname "raspberrypi" -}}
 {{- $pack := or .pack "true" }}
