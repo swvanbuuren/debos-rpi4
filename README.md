@@ -17,7 +17,7 @@ To build the image the first time, using the recipe `base-pack.yaml` instead of
 the prebuilt archive, run the following command:
 
 ```bash
-debos -m 8192MB -b kvm -t unpack:false -t debian-rpi4.yaml
+debos -m 8192MB -b kvm -t unpack:false debian-rpi4.yaml
 ```
 
 This will also store the results from the recipe `base-pack.yaml` and replace
