@@ -14,6 +14,9 @@ actions:
     mountpoints:
       - mountpoint: /
         partition: root
+      - mountpoint: /boot
+        partition: boot
+        options: [ x-systemd.automount ]
       - mountpoint: /boot/firmware
         partition: firmware
         options: [ x-systemd.automount ]
@@ -21,12 +24,16 @@ actions:
       - name: firmware
         fs: fat32
         start: 0%
-        end: 64MB
+        end: 2147MB
+      - name: boot
+        fs: ext2
+        start: 2147M
+        end: 4294M
+        flags: [ boot ]
       - name: root
         fs: ext4
-        start: 64MB
+        start: 4294M
         end: 100%
-        flags: [ boot ]
 
   - action: filesystem-deploy
     description: Deploy filesystem onto image
@@ -36,3 +43,50 @@ actions:
   - action: run
     chroot: true
     script: scripts/setup_swap.sh
+
+  - action: apt
+    description: Boot configuration packages
+    packages:
+      - initramfs-tools
+      - u-boot-menu
+
+  - action: overlay
+    description: Install U-Boot menu configuration
+    source: overlays/u-boot-menu
+
+  - action: apt
+    description: Install kernel and firmware packages for RPi
+    packages:
+      - linux-image-{{ $architecture}}
+      - e2fsprogs
+
+  - action: apt
+    description: U-Boot package
+    packages:
+      - u-boot-rpi
+
+  - action: apt
+    description: Firmware packages
+    packages:
+      - raspi-firmware
+      - firmware-brcm80211
+
+  - action: run
+    description: Install Raspberry Pi boot firmware
+    chroot: true
+    command: sh -c "cp -av /usr/lib/raspi-firmware/* /boot/firmware/"
+
+  - action: run
+    description: Install U-Boot
+    chroot: true
+    command:  sh -c "cp -av /usr/lib/u-boot/rpi_arm64/u-boot.bin /boot/firmware/"
+
+  - action: run
+    description: Create DTB Overlays directory
+    chroot: true
+    command:  sh -c "mkdir -p /boot/firmware/overlays"
+
+  - action: overlay
+    description: Copy config.txt
+    source: overlays/fw-config
+    destination: /boot/firmware
